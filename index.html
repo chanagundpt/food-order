@@ -161,6 +161,12 @@ select.inp{appearance:none;-webkit-appearance:none;padding-right:40px;background
 .people{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
 .person{display:inline-flex;align-items:center;gap:4px;background:#fff;border:2px solid var(--line);border-radius:999px;padding:2px 10px;font-size:14px}
 .person.has-note{background:var(--yellow);border-color:#F4DE95}
+.ngroup{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:7px}
+.ngroup .people{margin-top:0}
+.ngroup.has-note{background:#FFF8DD;border-radius:14px;padding:6px 8px}
+.ngn{font-size:13.5px;font-weight:600;color:#A06A12}
+.ngn.plain{color:var(--ink2);font-weight:500}
+.ngq{background:#fff;border-radius:999px;padding:0 8px;font-size:13px;font-weight:700;color:var(--pink3);border:2px solid var(--line)}
 .person .pn{color:#A06A12;font-size:13px}
 .person .x{border:0;background:var(--redbg);color:var(--red);width:20px;height:20px;border-radius:50%;font-size:12px;line-height:20px;padding:0;margin-left:2px}
 .shoptotal{display:flex;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:2px solid var(--line);font-weight:700}
@@ -645,6 +651,13 @@ function groupOrders(orders) {
   });
   return Object.values(shops).map(s => Object.assign(s, { items: Object.values(s.items).sort((a, b) => b.qty - a.qty || a.name.localeCompare(b.name, 'th')) }));
 }
+// รวมคนที่หมายเหตุเหมือนกัน (ไม่สนลำดับคำ/ช่องว่าง/จุลภาค) — ธรรมดาก่อน แล้วเรียงตามจำนวนมากไปน้อย
+function noteKey(n) { return String(n || '').split(/[\s,]+/).map(s => s.trim().toLowerCase()).filter(Boolean).sort().join(' '); }
+function noteGroups(people) {
+  const m = {};
+  people.forEach(o => { const k = noteKey(o.note); const g = m[k] || (m[k] = { note: (o.note || '').trim(), qty: 0, people: [] }); g.qty += o.qty; g.people.push(o); });
+  return Object.keys(m).map(k => m[k]).sort((a, b) => (!!a.note - !!b.note) || b.qty - a.qty || a.note.localeCompare(b.note, 'th'));
+}
 function byPerson(orders) {
   const p = {};
   orders.forEach(o => { const x = p[o.name] || (p[o.name] = { name: o.name, items: [], total: 0 }); x.items.push(o); x.total += (o.price || 0) * o.qty; });
@@ -671,10 +684,11 @@ function vSummary() {
     return `<div class="card shopsum"><h2>🏠 ${esc(shop ? shop.name : s.name)} <span class="sub">${s.qty} รายการ</span></h2>
       ${shop && shop.phone ? `<div class="tiny" style="margin:-6px 0 6px">📞 <a href="tel:${esc(shop.phone.replace(/[^\d+]/g, ''))}">${esc(shop.phone)}</a></div>` : ''}
       ${s.items.map(it => `<div class="mi"><div class="mh"><span class="nm">${esc(it.name)}</span><span class="pr">${it.price != null ? baht(it.total) : ''}</span><span class="q">×${it.qty}</span></div>
-        <div class="people">${it.people.map(o => `<span class="person${o.note ? ' has-note' : ''}">${esc(o.name)}${o.qty > 1 ? ` <b>×${o.qty}</b>` : ''}${o.note ? ` <span class="pn">· ${esc(o.note)}</span>` : ''}${admin ? `<button class="x noprint" title="ยกเลิกออเดอร์นี้" onclick="cancelOrder(${jsq(o.orderId)})">✕</button>` : ''}</span>`).join('')}</div></div>`).join('')}
+        ${noteGroups(it.people).map(g => `<div class="ngroup${g.note ? ' has-note' : ''}">${g.note ? `<span class="ngn">📝 ${esc(g.note)}</span>` : (it.people.some(o => o.note) ? '<span class="ngn plain">ธรรมดา</span>' : '')}${g.note || it.people.some(o => o.note) ? `<span class="ngq">×${g.qty}</span>` : ''}
+          <div class="people">${g.people.map(o => `<span class="person">${esc(o.name)}${o.qty > 1 ? ` <b>×${o.qty}</b>` : ''}${admin ? `<button class="x noprint" title="ยกเลิกออเดอร์นี้" onclick="cancelOrder(${jsq(o.orderId)})">✕</button>` : ''}</span>`).join('')}</div></div>`).join('')}</div>`).join('')}
       <div class="shoptotal"><span>รวมร้านนี้</span><span>${baht(s.total)}${s.noPrice ? ' <span class="tiny muted">(+ไม่ระบุราคา)</span>' : ''}</span></div></div>`;
   }).join('');
-  const notes = orders.filter(o => o.note);
+  const notes = orders.filter(o => o.note).sort((a, b) => a.menuName.localeCompare(b.menuName, 'th') || noteKey(a.note).localeCompare(noteKey(b.note), 'th'));
   const noteCard = notes.length ? `<div class="card"><h2>⚠️ หมายเหตุ / แพ้อาหาร <span class="sub">${notes.length} รายการ</span></h2>
     <div class="olist">${notes.map(o => `<div class="oitem" style="padding:8px 12px"><div class="grow"><b>${esc(o.name)}</b> <span class="small muted">— ${esc(o.menuName)}</span><div class="nt">📝 ${esc(o.note)}</div></div></div>`).join('')}</div></div>` : '';
   const personCard = `<div class="card"><h2>💰 ยอดรายคน <span class="sub">${people.length} คน</span></h2><table class="ptable">${people.map(p => `<tr><td><b>${esc(p.name)}</b><div class="tiny muted">${p.items.map(o => esc(o.menuName) + (o.qty > 1 ? ' ×' + o.qty : '')).join(', ')}</div></td><td>${baht(p.total)}</td></tr>`).join('')}</table></div>`;
@@ -690,7 +704,12 @@ function summaryText(date) {
     const shop = shopById(s.shopId);
     t += `\n🏠 ${shop ? shop.name : s.name} (${s.qty} รายการ)\n`;
     s.items.forEach(it => {
-      t += `• ${it.name} x${it.qty}${it.price != null ? ` = ${it.total}฿` : ''}\n   ${it.people.map(o => o.name + (o.qty > 1 ? ' x' + o.qty : '') + (o.note ? ` (${o.note})` : '')).join(', ')}\n`;
+      t += `• ${it.name} x${it.qty}${it.price != null ? ` = ${it.total}฿` : ''}\n`;
+      const groups = noteGroups(it.people), anyNote = groups.some(g => g.note);
+      groups.forEach(g => {
+        const names = g.people.map(o => o.name + (o.qty > 1 ? ' x' + o.qty : '')).join(', ');
+        t += anyNote ? `   - ${g.note || 'ธรรมดา'} x${g.qty}: ${names}\n` : `   ${names}\n`;
+      });
     });
     if (s.total) t += `รวมร้านนี้ ${s.total.toLocaleString('th-TH')}฿\n`;
   });

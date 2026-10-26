@@ -548,7 +548,7 @@ function formCard(day) {
     <span class="lbl">จำนวน</span>
     <div class="row"><div class="stepper"><button onclick="stepQty(-1)" aria-label="ลด">−</button><span id="fQty">${f.qty}</span><button onclick="stepQty(1)" aria-label="เพิ่ม">+</button></div>
       <div class="pricebox" id="fPrice">${priceHtml(unit, f.qty)}</div></div>
-    <label class="lbl" for="fNote">หมายเหตุ <span class="opt">(แพ้อาหาร / ไม่ใส่อะไร / เพิ่มอะไร)</span></label>
+    <label class="lbl" for="fNote">หมายเหตุ</label>
     <textarea id="fNote" class="inp" rows="2" maxlength="200" placeholder="เช่น ไม่เผ็ด, ไม่ใส่ผัก, แพ้กุ้ง" oninput="S.form.note=this.value;syncChips()">${esc(f.note)}</textarea>
     <div class="chips" id="noteChips" style="margin-top:8px">${NOTE_CHIPS.map(c => `<button class="chip sm${noteHas(c) ? ' on' : ''}" onclick="toggleNote(${jsq(c)})">${esc(c)}</button>`).join('')}</div>
     <label class="lbl" for="fName">ชื่อผู้สั่ง <span class="opt">(สั่งแทนเพื่อนได้ แก้ชื่อตรงนี้)</span></label>

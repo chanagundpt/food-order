@@ -66,7 +66,8 @@ body.pre .wrap{padding-bottom:30px}
 .pickbtn.staff .pi{background:var(--pinkbg)} .pickbtn.adm .pi{background:var(--sky)}
 .pickbtn b{display:block;font-size:19px}
 .pickbtn .arrow{margin-left:auto;font-size:24px;color:var(--pink2)}
-.login{max-width:400px;margin:18px auto 0}
+.card.login{max-width:400px;margin:18px auto 0}
+body.pre .wrap{max-width:760px}
 @media (min-width:900px){ .pick{grid-template-columns:1fr 1fr} .pickbtn{flex-direction:column;text-align:center;padding:28px 20px} .pickbtn .arrow{display:none} .pickbtn .pi{width:96px;height:96px} .pickbtn .pi svg{width:76px;height:76px} }
 
 /* ---------- common ---------- */
@@ -133,6 +134,46 @@ select.inp{appearance:none;-webkit-appearance:none;padding-right:40px;background
 .pricebox b{font-size:20px;color:var(--pink3)}
 .hint{font-size:13px;color:var(--ink2);margin-top:6px}
 .editing{background:var(--sky);border-radius:14px;padding:8px 12px;font-size:14px;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+
+/* ---------- 1 การ์ดต่อร้าน ---------- */
+.manyshops{margin-top:12px;background:var(--sky);border-radius:14px;padding:9px 12px;font-size:14.5px}
+.orderform.multi{padding-top:0;overflow:hidden}
+.shophead{margin:0 -16px 4px;padding:12px 16px 10px;border-bottom:2px dashed var(--line)}
+.shophead b{display:block;font-size:18px}
+.shophead .num{display:inline-block;font-size:12px;font-weight:700;border-radius:999px;padding:1px 10px;background:#fff;margin-bottom:3px}
+.shophead.c0{background:var(--pinkbg)} .shophead.c0 .num{color:var(--pink3)}
+.shophead.c1{background:var(--sky)} .shophead.c1 .num{color:#3F78A3}
+.shophead.c2{background:var(--mint)} .shophead.c2 .num{color:#3E7D52}
+.orderform.multi.c0{border-color:#F8D3DC} .orderform.multi.c1{border-color:#C3DDF2} .orderform.multi.c2{border-color:#BFE3C8}
+/* ดรอปดาวน์หมายเหตุ (เลือกได้หลายข้อ) */
+.ddbtn{width:100%;display:flex;align-items:center;gap:8px;border:2px solid var(--line);background:#fff;border-radius:16px;padding:9px 14px;text-align:left;min-height:48px}
+.ddbtn.open{border-color:var(--pink);box-shadow:0 0 0 4px var(--pinkbg)}
+.ddbtn .grow{display:flex;flex-wrap:wrap;gap:6px}
+.ddbtn .arr{color:var(--pink2);font-size:14px}
+.ddlist{margin-top:6px;border:2px solid var(--line);border-radius:16px;background:#fff;padding:4px;box-shadow:var(--shadow)}
+.ddopt{display:flex;align-items:center;gap:10px;width:100%;border:0;background:none;text-align:left;padding:10px;border-radius:12px;font-size:15.5px}
+.ddopt:hover{background:#FBF5EF}
+.ddopt .ck{width:24px;height:24px;border-radius:8px;border:2px solid var(--line);display:grid;place-items:center;color:#fff;font-weight:700;font-size:14px;flex:none}
+.ddopt.on .ck{background:var(--pink2);border-color:var(--pink2)}
+/* ไฟกระพริบ "กำลังเปิดรับ" */
+.live-dot{position:absolute;width:12px;height:12px;border-radius:50%;background:#34C759;box-shadow:0 0 0 0 rgba(52,199,89,.7);animation:blink 1.4s infinite;top:-3px;right:-3px;border:2px solid #fff}
+@keyframes blink{0%{box-shadow:0 0 0 0 rgba(52,199,89,.7);opacity:1}50%{opacity:.35}70%{box-shadow:0 0 0 8px rgba(52,199,89,0)}100%{box-shadow:0 0 0 0 rgba(52,199,89,0);opacity:1}}
+.status .dot{position:relative}
+.live-dot.corner{top:7px;right:12px;width:14px;height:14px}
+.tabs button{position:relative}
+.tabs button.live::after{content:"";position:absolute;top:4px;right:calc(50% - 22px);width:10px;height:10px;border-radius:50%;background:#34C759;border:2px solid #fff;animation:blink 1.4s infinite}
+/* เปิด/ปิดรับออเดอร์ */
+.openbox{margin-top:16px;border:2px dashed var(--line);border-radius:18px;padding:12px 14px;background:#FFFBF4}
+.openbox.on{background:#EEF9F0;border-color:#BFE3C8;border-style:solid}
+.openbox .openbtn{width:100%;margin-top:10px;position:relative}
+.openbox .openbtn.closeit{background:#fff;color:var(--red);border-color:#F3CFC9;box-shadow:0 4px 0 #F3CFC9}
+/* ตัวเลือกหมายเหตุ (ผู้ดูแล) */
+.noteed.menu{background:var(--pinkbg);border-radius:16px;padding:10px;margin:2px 0 10px}
+.optchip{display:inline-flex;align-items:center;gap:4px}
+.optchip .xx{border:0;background:rgba(255,255,255,.8);color:var(--red);width:20px;height:20px;border-radius:50%;font-size:11px;padding:0;line-height:20px}
+.ibtn.nb{width:auto;min-width:34px;padding:0 8px;display:inline-flex;align-items:center;gap:3px}
+.ibtn.nb i{font-style:normal;font-size:12px;font-weight:700;color:var(--pink3)}
+.ibtn.nb.on{background:var(--pinkbg)}
 
 /* ---------- order lists ---------- */
 .olist{display:flex;flex-direction:column;gap:10px}
@@ -223,6 +264,7 @@ select.inp{appearance:none;-webkit-appearance:none;padding-right:40px;background
 /* ---------- PC ---------- */
 @media (min-width:900px){
   .wrap{max-width:1120px;padding:0 28px 40px}
+  .tabs button.live::after{top:6px;right:8px}
   .top{padding:20px 0 8px;gap:16px}
   .brand .mark{height:36px}
   .brand .bt b{font-size:22px}
@@ -311,12 +353,11 @@ const S = {
   mode: LS.get('mode', ''), me: null, users: null,
   tab: 'order', today: '', cache: {}, loading: {}, shops: [], menus: [], rev: '', version: '',
   viewDate: '', adminDate: '', hist: null, lastShopIds: [],
-  form: { shopId: '', menuId: '', other: '', otherPrice: '', qty: 1, note: '', name: '' }, editId: '', busy: false,
+  forms: {}, editId: '', editShop: '', noteOpen: '', noteMenu: '', busy: false,
   ad: null, adSearch: '', se: null, meId: '',
 };
 LS.set('device', S.deviceId);
 
-const NOTE_CHIPS = ['เผ็ดกลาง', 'หวานปกติ', 'หวานน้อย'];
 
 /* ================= ช่วย ================= */
 const $ = s => document.querySelector(s);
@@ -431,6 +472,8 @@ function render() {
   $('#modeBtn').innerHTML = S.mode === 'admin' ? `🧸 <b>${esc(S.me ? S.me.name : 'ผู้ดูแล')}</b>` : '🍱 พนักงาน · <b>สลับ</b>';
   if (S.tab === 'admin' && S.mode !== 'admin') S.tab = 'order';
   document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === S.tab));
+  const T = S.cache[S.today];
+  $('#tabs [data-t="order"]').classList.toggle('live', !!(T && T.day.isOpen));
   if (!S.mode) { $('#view').innerHTML = vWelcome(); return; }
   if (pre) { $('#view').innerHTML = vLogin(); return; }
   if (!S.today) { $('#view').innerHTML = '<div class="spin"></div>'; return; }
@@ -487,7 +530,8 @@ function vOrder() {
   const D = S.cache[S.today];
   if (!D) { load(S.today).then(render, fail); return '<div class="spin"></div>'; }
   const day = D.day, canOrder = day.isOpen || (isAdmin() && day.shopIds.length);
-  const left = `${statusCard(day)}${canOrder ? formCard(day) : ''}`;
+  const shops = day.shopIds.map(shopById).filter(Boolean);
+  const left = `${statusCard(day)}${canOrder ? shops.map((s, i) => formCard(s, i, shops.length)).join('') : ''}`;
   const right = `${greet()}${mineCard(D)}`;
   return `<div class="cols"><div>${left}</div><div class="stickyside">${right}</div></div>`;
 }
@@ -502,9 +546,13 @@ function greet() {
 }
 
 function statusCard(day) {
-  let cls, ic, title, sub = '';
+  let cls, ic, title, sub = '', showShops = true;
   if (day.status === 'none' || !day.shopIds.length) {
-    cls = 'none'; ic = '⏳'; title = 'ยังไม่ได้เลือกร้านวันนี้'; sub = 'รอผู้ดูแลเลือกร้านแป๊บนึงน้า';
+    cls = 'none'; ic = '⏳'; title = 'ยังไม่ได้เลือกร้านวันนี้'; sub = 'รอผู้ดูแลเลือกร้านแป๊บนึงน้า'; showShops = false;
+  } else if (day.status === 'draft') {
+    cls = 'none'; ic = '⏳'; title = 'ยังไม่เปิดรับออเดอร์';
+    sub = isAdmin() ? 'บันทึกร้านแล้ว · ไปแท็บ "ตั้งค่า" แล้วกด "เปิดรับออเดอร์" พนักงานถึงจะสั่งได้' : 'ผู้ดูแลกำลังเตรียมร้าน รอแป๊บน้า';
+    showShops = isAdmin();
   } else if (day.isOpen) {
     cls = 'open'; ic = '🍽️'; title = 'เปิดรับออเดอร์อยู่';
     const m = minsLeft(day.cutoff);
@@ -513,97 +561,107 @@ function statusCard(day) {
     cls = 'closed'; ic = '🔒'; title = 'ปิดรับออเดอร์แล้ว';
     sub = isAdmin() ? 'คุณเป็นผู้ดูแล ยังเพิ่ม/แก้ออเดอร์ได้' : 'ถ้าลืมสั่ง ติดต่อผู้ดูแลได้นะ';
   }
-  const shops = day.shopIds.map(shopById).filter(Boolean).map(s => esc(s.name)).join(' · ');
-  return `<div class="card"><div class="status ${cls}"><div class="dot">${ic}</div><div class="grow"><b>${title}</b><div class="small muted">${sub}</div>${shops ? `<div class="small" style="margin-top:2px">🏠 ${shops}</div>` : ''}</div></div>
-    ${day.note ? `<div class="announce">📢 ${esc(day.note)}</div>` : ''}</div>`;
+  const list = day.shopIds.map(shopById).filter(Boolean);
+  const shops = showShops ? list.map(s => esc(s.name)).join(' · ') : '';
+  const many = day.isOpen && list.length > 1 ? `<div class="manyshops">วันนี้มี <b>${list.length} ร้าน</b> สั่งได้ทุกร้าน · เลื่อนลงดูนะ 👇</div>` : '';
+  return `<div class="card"><div class="status ${cls}"><div class="dot">${ic}${cls === 'open' ? '<span class="live-dot"></span>' : ''}</div><div class="grow"><b>${title}</b><div class="small muted">${sub}</div>${shops ? `<div class="small" style="margin-top:2px">🏠 ${shops}</div>` : ''}</div></div>
+    ${many}${day.note ? `<div class="announce">📢 ${esc(day.note)}</div>` : ''}</div>`;
 }
 
-function formCard(day) {
-  const f = S.form;
-  const shops = day.shopIds.map(shopById).filter(Boolean);
-  if (!shops.some(s => s.shopId === f.shopId)) { f.shopId = shops[0] ? shops[0].shopId : ''; f.menuId = ''; }
-  const shop = shopById(f.shopId);
-  const menus = menusOf(f.shopId).filter(m => m.active || isAdmin() || m.menuId === f.menuId);
+/* ---------- ฟอร์มสั่งอาหาร: 1 การ์ดต่อร้าน ---------- */
+function blankForm() { return { menuId: '', other: '', otherPrice: '', qty: 1, notes: [], extra: '', name: '' }; }
+function fm(shopId) { return S.forms[shopId] || (S.forms[shopId] = blankForm()); }
+function noteOptionsFor(shopId, menuId) {
+  const s = shopById(shopId), m = menuById(menuId), out = [];
+  ((s && s.noteOptions) || []).concat((m && m.noteOptions) || []).forEach(x => { if (!out.includes(x)) out.push(x); });
+  return out;
+}
+function formUnit(f) {
+  const sel = menuById(f.menuId);
+  return f.menuId === '__other' ? (f.otherPrice !== '' ? Number(f.otherPrice) : null) : sel ? sel.price : null;
+}
+function formCard(shop, i, n) {
+  const sid = shop.shopId, f = fm(sid), admin = isAdmin();
+  const menus = menusOf(sid).filter(m => m.active || admin || m.menuId === f.menuId);
   const cats = {};
   menus.forEach(m => (cats[m.category || ''] = cats[m.category || ''] || []).push(m));
   const opt = m => `<option value="${esc(m.menuId)}"${m.menuId === f.menuId ? ' selected' : ''}>${esc(m.name)}${m.price != null ? ' — ' + baht(m.price) : ''}${m.active ? '' : ' (หมด)'}</option>`;
   const catKeys = Object.keys(cats).sort((a, b) => (a === '') - (b === ''));
   const options = catKeys.map(k => k && catKeys.length > 1 ? `<optgroup label="${esc(k)}">${cats[k].map(opt).join('')}</optgroup>` : cats[k].map(opt).join('')).join('');
-  const sel = menuById(f.menuId);
-  const unit = f.menuId === '__other' ? (f.otherPrice !== '' ? Number(f.otherPrice) : null) : sel ? sel.price : null;
-  const editing = S.editId ? `<div class="editing">✏️ กำลังแก้ไขออเดอร์ <span class="grow"></span><button class="btn sm" onclick="cancelEdit()">ยกเลิกแก้ไข</button></div>` : '';
+  const editing = S.editId && S.editShop === sid ? `<div class="editing">✏️ กำลังแก้ไขออเดอร์ <span class="grow"></span><button class="btn sm" onclick="cancelEdit()">ยกเลิกแก้ไข</button></div>` : '';
+  const nopts = noteOptionsFor(sid, f.menuId), open = S.noteOpen === sid;
+  const noteBox = nopts.length ? `<button class="ddbtn${open ? ' open' : ''}" onclick="toggleNoteDd(${jsq(sid)})">
+        <span class="grow">${f.notes.length ? f.notes.map(x => `<span class="chip sm on">${esc(x)}</span>`).join(' ') : '<span class="muted">— เลือกหมายเหตุ —</span>'}</span><span class="arr">▾</span></button>
+      ${open ? `<div class="ddlist">${nopts.map(x => `<button class="ddopt${f.notes.includes(x) ? ' on' : ''}" onclick="toggleNoteOpt(${jsq(sid)},${jsq(x)})"><span class="ck">${f.notes.includes(x) ? '✓' : ''}</span>${esc(x)}</button>`).join('')}
+        <div class="row" style="justify-content:flex-end;padding:6px 4px 2px"><button class="btn sm pri" onclick="toggleNoteDd(${jsq(sid)})">เสร็จ</button></div></div>` : ''}`
+    : `<div class="hint">${f.menuId ? 'เมนูนี้ไม่มีตัวเลือกหมายเหตุ' : 'เลือกเมนูก่อน แล้วเลือกหมายเหตุได้ (ถ้ามี)'}</div>`;
+  const head = n > 1
+    ? `<div class="shophead c${i % 3}"><span class="num">ร้านที่ ${i + 1}/${n}</span><b>🏠 ${esc(shop.name)}</b>${shop.note ? `<div class="tiny">${esc(shop.note)}</div>` : ''}</div>`
+    : `<h2>🍱 สั่งอาหาร</h2><div class="oneshop"><span style="font-size:22px">🏠</span><div class="grow"><b>${esc(shop.name)}</b>${shop.note ? `<div class="tiny muted">${esc(shop.note)}</div>` : ''}</div></div>`;
 
-  return `<div class="card" id="orderForm"><h2>🍱 สั่งอาหาร</h2>${editing}
-    ${shops.length > 1 ? `<span class="lbl">เลือกร้าน</span><div class="shoppick">${shops.map(s => `<button class="shopbtn${s.shopId === f.shopId ? ' on' : ''}" onclick="pickShop(${jsq(s.shopId)})"><b>${esc(s.name)}</b><small>${menusOf(s.shopId).filter(m => m.active).length} เมนู</small></button>`).join('')}</div>`
-      : `<div class="oneshop"><span style="font-size:22px">🏠</span><div class="grow"><b>${esc(shop ? shop.name : '')}</b>${shop && shop.note ? `<div class="tiny muted">${esc(shop.note)}</div>` : ''}</div></div>`}
-    <label class="lbl" for="fMenu">เลือกเมนู</label>
-    <select id="fMenu" class="inp" onchange="pickMenu(this.value)">
+  return `<div class="card orderform${n > 1 ? ' multi c' + (i % 3) : ''}" id="of-${i}">${head}${editing}
+    <label class="lbl" for="m-${i}">เลือกเมนู</label>
+    <select id="m-${i}" class="inp" onchange="pickMenu(${jsq(sid)},this.value,${i})">
       <option value="">— แตะเพื่อเลือกเมนู (${menus.length} รายการ) —</option>${options}
-      ${isAdmin() ? `<option value="__other"${f.menuId === '__other' ? ' selected' : ''}>✏️ เมนูอื่น (พิมพ์เอง · ผู้ดูแล)</option>` : ''}
+      ${admin ? `<option value="__other"${f.menuId === '__other' ? ' selected' : ''}>✏️ เมนูอื่น (พิมพ์เอง · ผู้ดูแล)</option>` : ''}
     </select>
-    ${isAdmin() && f.menuId === '__other' ? `<div class="row" style="margin-top:8px"><input class="inp grow" placeholder="ชื่อเมนู เช่น ข้าวผัดปู" value="${esc(f.other)}" oninput="S.form.other=this.value" maxlength="80">
-      <input class="inp" style="width:110px" type="number" inputmode="decimal" min="0" placeholder="ราคา" value="${esc(f.otherPrice)}" oninput="S.form.otherPrice=this.value;updPrice()"></div>
+    ${admin && f.menuId === '__other' ? `<div class="row" style="margin-top:8px"><input class="inp grow" id="o-${i}" placeholder="ชื่อเมนู" value="${esc(f.other)}" oninput="fm(${jsq(sid)}).other=this.value" maxlength="80">
+      <input class="inp" style="width:110px" type="number" inputmode="decimal" min="0" placeholder="ราคา" value="${esc(f.otherPrice)}" oninput="fm(${jsq(sid)}).otherPrice=this.value;updPrice(${jsq(sid)},${i})"></div>
       <div class="hint">💡 ระบบจะเพิ่มเมนูนี้เข้าร้าน ครั้งหน้าเลือกจากรายการได้เลย</div>` : ''}
-    ${isAdmin() ? '' : '<div class="hint">ไม่มีเมนูที่อยากกิน? แจ้งผู้ดูแลให้เพิ่มได้เลยน้า</div>'}
     <span class="lbl">จำนวน</span>
-    <div class="row"><div class="stepper"><button onclick="stepQty(-1)" aria-label="ลด">−</button><span id="fQty">${f.qty}</span><button onclick="stepQty(1)" aria-label="เพิ่ม">+</button></div>
-      <div class="pricebox" id="fPrice">${priceHtml(unit, f.qty)}</div></div>
-    <label class="lbl" for="fNote">หมายเหตุ</label>
-    <textarea id="fNote" class="inp" rows="2" maxlength="200" placeholder="เช่น ไม่เผ็ด, ไม่ใส่ผัก, แพ้กุ้ง" oninput="S.form.note=this.value;syncChips()">${esc(f.note)}</textarea>
-    <div class="chips" id="noteChips" style="margin-top:8px">${NOTE_CHIPS.map(c => `<button class="chip sm${noteHas(c) ? ' on' : ''}" onclick="toggleNote(${jsq(c)})">${esc(c)}</button>`).join('')}</div>
-    <label class="lbl" for="fName">ชื่อผู้สั่ง <span class="opt">(สั่งแทนเพื่อนได้ แก้ชื่อตรงนี้)</span></label>
-    <input id="fName" class="inp" maxlength="40" placeholder="ชื่อเล่น" value="${esc(f.name || S.name)}" oninput="S.form.name=this.value">
-    <div style="margin-top:16px"><button class="btn pri big" id="btnOrder" onclick="submitOrder()"${S.busy ? ' disabled' : ''}>${S.editId ? 'บันทึกการแก้ไข ✓' : 'สั่งเลย ♡'}</button></div>
+    <div class="row"><div class="stepper"><button onclick="stepQty(${jsq(sid)},-1,${i})" aria-label="ลด">−</button><span id="q-${i}">${f.qty}</span><button onclick="stepQty(${jsq(sid)},1,${i})" aria-label="เพิ่ม">+</button></div>
+      <div class="pricebox" id="p-${i}">${priceHtml(formUnit(f), f.qty)}</div></div>
+    <span class="lbl">หมายเหตุ</span>
+    ${noteBox}
+    ${admin ? `<label class="lbl" for="x-${i}">หมายเหตุเพิ่มเติม <span class="opt">(ผู้ดูแลพิมพ์เองได้)</span></label>
+      <input id="x-${i}" class="inp" maxlength="120" value="${esc(f.extra)}" oninput="fm(${jsq(sid)}).extra=this.value">` : ''}
+    <label class="lbl" for="n-${i}">ชื่อผู้สั่ง <span class="opt">(สั่งแทนเพื่อนได้ แก้ชื่อตรงนี้)</span></label>
+    <input id="n-${i}" class="inp" maxlength="40" placeholder="ชื่อเล่น" value="${esc(f.name || S.name)}" oninput="fm(${jsq(sid)}).name=this.value">
+    <div style="margin-top:16px"><button class="btn pri big" id="b-${i}" onclick="submitOrder(${jsq(sid)},${i})"${S.busy ? ' disabled' : ''}>${S.editId && S.editShop === sid ? 'บันทึกการแก้ไข ✓' : 'สั่งเลย ♡'}</button></div>
   </div>`;
 }
 function priceHtml(unit, qty) {
   if (unit == null) return '<span class="small muted">ไม่ระบุราคา</span>';
   return `<div class="tiny muted">${baht(unit)} × ${qty}</div><b>${baht(unit * qty)}</b>`;
 }
-function updPrice() {
-  const f = S.form, sel = menuById(f.menuId);
-  const unit = f.menuId === '__other' ? (f.otherPrice !== '' ? Number(f.otherPrice) : null) : sel ? sel.price : null;
-  const el = $('#fPrice'); if (el) el.innerHTML = priceHtml(unit, f.qty);
+function updPrice(sid, i) { const el = $('#p-' + i); if (el) el.innerHTML = priceHtml(formUnit(fm(sid)), fm(sid).qty); }
+function pickMenu(sid, v, i) {
+  const f = fm(sid);
+  f.menuId = v;
+  const allowed = noteOptionsFor(sid, v);
+  f.notes = f.notes.filter(x => allowed.includes(x));
+  render();
+  if (v === '__other') setTimeout(() => { const el = $('#o-' + i); el && el.focus(); }, 30);
 }
-function pickShop(id) { S.form.shopId = id; S.form.menuId = ''; render(); }
-function pickMenu(v) {
-  const was = S.form.menuId === '__other';
-  S.form.menuId = v;
-  if (was !== (v === '__other')) { render(); if (v === '__other') setTimeout(() => { const i = document.querySelector('#orderForm .row input'); i && i.focus(); }, 30); }
-  else updPrice();
+function stepQty(sid, n, i) { const f = fm(sid); f.qty = Math.max(1, Math.min(50, f.qty + n)); $('#q-' + i).textContent = f.qty; updPrice(sid, i); }
+function toggleNoteDd(sid) { S.noteOpen = S.noteOpen === sid ? '' : sid; render(); }
+function toggleNoteOpt(sid, x) {
+  const f = fm(sid), k = f.notes.indexOf(x);
+  if (k >= 0) f.notes.splice(k, 1); else f.notes.push(x);
+  render();
 }
-function stepQty(n) { S.form.qty = Math.max(1, Math.min(50, S.form.qty + n)); $('#fQty').textContent = S.form.qty; updPrice(); }
-function noteParts() { return S.form.note.split(/\s*,\s*/).map(s => s.trim()).filter(Boolean); }
-function noteHas(c) { return noteParts().includes(c); }
-function toggleNote(c) {
-  const p = noteParts(), i = p.indexOf(c);
-  if (i >= 0) p.splice(i, 1); else p.push(c);
-  S.form.note = p.join(', ');
-  $('#fNote').value = S.form.note; syncChips();
-}
-function syncChips() { document.querySelectorAll('#noteChips .chip').forEach(b => b.classList.toggle('on', noteHas(b.textContent))); }
 
-function submitOrder() {
-  const f = S.form;
-  const name = (($('#fName') || {}).value || '').trim();
-  if (!f.shopId) return toast('เลือกร้านก่อนนะ', true);
+function submitOrder(sid, i) {
+  const f = fm(sid);
+  const name = (($('#n-' + i) || {}).value || '').trim();
   if (!f.menuId) return toast('เลือกเมนูก่อนนะ', true);
   if (f.menuId === '__other' && !isAdmin()) return toast('เลือกเมนูจากรายการนะ', true);
   if (f.menuId === '__other' && !f.other.trim()) return toast('พิมพ์ชื่อเมนูด้วยนะ', true);
-  if (!name) { toast('ใส่ชื่อผู้สั่งด้วยนะ', true); $('#fName').focus(); return; }
-  S.busy = true; $('#btnOrder').disabled = true;
-  const args = { date: S.today, orderId: S.editId, shopId: f.shopId, qty: f.qty, note: f.note.trim(), name };
+  if (!name) { toast('ใส่ชื่อผู้สั่งด้วยนะ', true); $('#n-' + i).focus(); return; }
+  S.busy = true; $('#b-' + i).disabled = true;
+  const note = f.notes.concat(isAdmin() && f.extra.trim() ? [f.extra.trim()] : []).join(', ');
+  const args = { date: S.today, orderId: S.editShop === sid ? S.editId : '', shopId: sid, qty: f.qty, note, name };
   if (f.menuId === '__other') { args.menuName = f.other.trim(); args.price = f.otherPrice; } else args.menuId = f.menuId;
-  const wasEdit = !!S.editId;
+  const wasEdit = !!args.orderId;
   call('placeOrder', args).then(d => {
     applySync(d);
     if (!S.name) { S.name = name; LS.set('name', name); }
     toast(wasEdit ? 'แก้ไขออเดอร์แล้ว ✓' : `สั่งแล้ว ♡ ${name}`);
-    S.form = { shopId: f.shopId, menuId: '', other: '', otherPrice: '', qty: 1, note: '', name: '' };
-    S.editId = '';
+    S.forms[sid] = blankForm(); S.noteOpen = '';
+    if (wasEdit) { S.editId = ''; S.editShop = ''; }
   }).catch(fail).finally(() => { S.busy = false; render(); });
 }
-function cancelEdit() { S.editId = ''; S.form = { shopId: S.form.shopId, menuId: '', other: '', otherPrice: '', qty: 1, note: '', name: '' }; render(); }
+function cancelEdit() { if (S.editShop) S.forms[S.editShop] = blankForm(); S.editId = ''; S.editShop = ''; render(); }
 
 function mineCard(D) {
   const mine = D.orders.filter(o => o.mine), can = D.day.isOpen || isAdmin();
@@ -619,11 +677,19 @@ function mineCard(D) {
 }
 function editOrder(id) {
   const o = (S.cache[S.today].orders || []).find(x => x.orderId === id); if (!o) return;
-  const menu = menuById(o.menuId);
-  S.editId = id;
-  S.form = { shopId: o.shopId, menuId: menu ? o.menuId : (isAdmin() ? '__other' : ''), other: menu ? '' : o.menuName, otherPrice: menu || o.price == null ? '' : String(o.price), qty: o.qty, note: o.note || '', name: o.name };
+  const menu = menuById(o.menuId), admin = isAdmin();
+  const opts = noteOptionsFor(o.shopId, o.menuId);
+  const parts = String(o.note || '').split(/\s*,\s*/).filter(Boolean);
+  if (S.editShop && S.editShop !== o.shopId) S.forms[S.editShop] = blankForm();
+  S.editId = id; S.editShop = o.shopId;
+  S.forms[o.shopId] = {
+    menuId: menu ? o.menuId : (admin ? '__other' : ''), other: menu ? '' : o.menuName,
+    otherPrice: menu || o.price == null ? '' : String(o.price), qty: o.qty,
+    notes: parts.filter(p => opts.includes(p)), extra: admin ? parts.filter(p => !opts.includes(p)).join(', ') : '', name: o.name,
+  };
   render();
-  setTimeout(() => { const el = $('#orderForm'); el && el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 30);
+  const idx = S.cache[S.today].day.shopIds.filter(x => shopById(x)).indexOf(o.shopId);
+  setTimeout(() => { const el = $('#of-' + idx); el && el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 30);
 }
 async function cancelOrder(id, date) {
   if (!(await confirmBox('ยกเลิกออเดอร์นี้ใช่มั้ย?', 'ยกเลิกออเดอร์'))) return;
@@ -636,7 +702,7 @@ function changeName() {
     <div style="margin-top:14px"><button class="btn pri big" onclick="saveName()">บันทึก</button></div></div>`);
   setTimeout(() => { const i = $('#nmIn'); i.focus(); i.onkeydown = e => { if (e.key === 'Enter') saveName(); }; }, 50);
 }
-function saveName() { S.name = $('#nmIn').value.trim(); LS.set('name', S.name); S.form.name = ''; closeModal(); render(); }
+function saveName() { S.name = $('#nmIn').value.trim(); LS.set('name', S.name); Object.keys(S.forms).forEach(k => { S.forms[k].name = ''; }); closeModal(); render(); }
 
 /* ================= แท็บ: สรุป ================= */
 function groupOrders(orders) {
@@ -752,7 +818,7 @@ function vAdmin() {
   if (!isAdmin()) return vLogin();
   const date = S.adminDate || S.today, D = S.cache[date];
   if (!D) { load(date).then(render, fail); return '<div class="spin"></div>'; }
-  if (!S.ad || S.ad.date !== date) S.ad = { date, shopIds: D.day.shopIds.slice(), cutoff: D.day.cutoff || '11:00', status: D.day.status === 'closed' ? 'closed' : 'open', note: D.day.note || '', fresh: D.day.status === 'none' };
+  if (!S.ad || S.ad.date !== date) S.ad = { date, shopIds: D.day.shopIds.slice(), cutoff: D.day.cutoff || '11:00', status: D.day.status, note: D.day.note || '', fresh: D.day.status === 'none' };
   const me = S.me || {};
   return `<div class="cols"><div>${dayPanel(D)}</div><div>${shopsPanel()}
     <div class="card"><h2>👤 บัญชีของฉัน</h2>
@@ -765,20 +831,18 @@ function dayPanel(D) {
   const cnt = D.orders.reduce((x, o) => x + o.qty, 0);
   return `<div class="card"><h2>🗓️ ร้านประจำวัน</h2>
     <input type="date" class="inp" value="${a.date}" onchange="S.adminDate=this.value;S.ad=null;render()">
-    <div class="row small" style="margin-top:6px"><span class="grow">${thDate(a.date, { weekday: 'long', day: 'numeric', month: 'long' })}</span>${a.fresh ? '<span class="tag yel">ยังไม่ได้ตั้งค่า</span>' : D.day.isOpen ? '<span class="tag mint">เปิดรับอยู่</span>' : '<span class="tag gray">ปิดรับ</span>'}${cnt ? ` <span class="tag pink">${cnt} รายการ</span>` : ''}</div>
+    <div class="row small" style="margin-top:6px"><span class="grow">${thDate(a.date, { weekday: 'long', day: 'numeric', month: 'long' })}</span>${a.fresh ? '<span class="tag yel">ยังไม่ได้ตั้งค่า</span>' : D.day.isOpen ? '<span class="tag mint">เปิดรับอยู่</span>' : D.day.status === 'draft' ? '<span class="tag yel">รอเปิดรับ</span>' : '<span class="tag gray">ปิดรับ</span>'}${cnt ? ` <span class="tag pink">${cnt} รายการ</span>` : ''}</div>
     <span class="lbl">เลือกร้านที่จะสั่งวันนี้ <span class="opt">(เลือกได้หลายร้าน)</span></span>
     ${S.shops.length > 6 ? `<input class="inp" placeholder="🔍 ค้นหาร้าน" value="${esc(S.adSearch)}" oninput="S.adSearch=this.value;renderKeep(this)" style="margin-bottom:8px">` : ''}
     ${list.length ? `<div class="chips">${list.map(s => `<button class="chip${a.shopIds.includes(s.shopId) ? ' on' : ''}" onclick="toggleDayShop(${jsq(s.shopId)})">${a.shopIds.includes(s.shopId) ? '✓ ' : ''}${esc(s.name)}</button>`).join('')}</div>`
       : `<div class="small muted">${S.shops.length ? 'ไม่พบร้าน' : 'ยังไม่มีร้าน — เพิ่มร้านในกล่อง "ร้านและเมนู" ก่อนนะ'}</div>`}
     <div class="row" style="margin-top:10px"><button class="btn sm" onclick="randomShop()">🎲 สุ่มร้านให้หน่อย</button>${S.lastShopIds.length ? `<button class="btn sm" onclick="useLast()">↺ ใช้ร้านเหมือนครั้งก่อน</button>` : ''}</div>
-    <div class="row" style="margin-top:4px;align-items:flex-end">
-      <div><span class="lbl">ปิดรับออเดอร์เวลา</span><input type="time" class="inp" style="width:150px" value="${esc(a.cutoff)}" onchange="S.ad.cutoff=this.value"></div>
-      <div><span class="lbl">สถานะ</span><div class="sw"><button class="o${a.status === 'open' ? ' on' : ''}" onclick="S.ad.status='open';render()">เปิดรับ</button><button class="c${a.status === 'closed' ? ' on' : ''}" onclick="S.ad.status='closed';render()">ปิดรับ</button></div></div>
-    </div>
+    <span class="lbl">ปิดรับออเดอร์เวลา</span><input type="time" class="inp" style="width:150px" value="${esc(a.cutoff)}" onchange="S.ad.cutoff=this.value">
     <label class="lbl">ประกาศถึงทีม <span class="opt">(ไม่บังคับ)</span></label>
     <input class="inp" maxlength="200" placeholder="เช่น วันนี้ร้านส่งช้า สั่งก่อน 10 โมงนะ" value="${esc(a.note)}" oninput="S.ad.note=this.value">
     <div style="margin-top:14px"><button class="btn mint big" onclick="saveDay()">บันทึกร้านประจำวัน ✓</button></div>
-    <div class="hint">เว้นเวลาปิดรับว่าง = เปิดจนกว่าจะกด "ปิดรับ"</div></div>`;
+    <div class="hint">เว้นเวลาปิดรับว่าง = เปิดจนกว่าจะกด "ปิดรับออเดอร์"</div>
+    ${openPanel(D)}</div>`;
 }
 function renderKeep(inp) { const pos = inp.selectionStart; render(); const n = document.querySelector('#view input[oninput^="S.adSearch"]'); if (n) { n.focus(); n.setSelectionRange(pos, pos); } }
 function toggleDayShop(id) { const a = S.ad, i = a.shopIds.indexOf(id); if (i >= 0) a.shopIds.splice(i, 1); else a.shopIds.push(id); render(); }
@@ -790,11 +854,30 @@ function randomShop() {
   S.ad.shopIds = [pick.shopId]; render(); toast('🎲 วันนี้กิน… ' + pick.name + '!');
 }
 function useLast() { S.ad.shopIds = S.lastShopIds.filter(id => shopById(id)); render(); }
+// ขั้นที่ 2: เปิด/ปิดรับออเดอร์ (พนักงานเห็นหน้าสั่งเมื่อเปิดรับแล้วเท่านั้น)
+function openPanel(D) {
+  const day = D.day, a = S.ad;
+  if (a.fresh) return `<div class="openbox off"><b>ขั้นต่อไป: เปิดรับออเดอร์</b><div class="small muted">บันทึกร้านประจำวันก่อน แล้วปุ่มเปิดรับออเดอร์จะกดได้</div>
+    <button class="btn big openbtn" disabled>🔔 เปิดรับออเดอร์</button></div>`;
+  if (day.isOpen) return `<div class="openbox on"><b>🟢 กำลังเปิดรับออเดอร์</b><div class="small muted">พนักงานสั่งได้แล้ว${day.cutoff ? ` · ปิดรับอัตโนมัติ ${day.cutoff} น.` : ''}</div>
+    <button class="btn big openbtn closeit" onclick="setDayStatus('closed')"><span class="live-dot corner"></span>🔒 ปิดรับออเดอร์</button></div>`;
+  const late = day.status === 'open' && !day.isOpen;
+  return `<div class="openbox"><b>${day.status === 'closed' || late ? '🔒 ปิดรับออเดอร์แล้ว' : '📝 บันทึกแล้ว · พนักงานยังไม่เห็นหน้าสั่ง'}</b>
+    <div class="small muted">${late ? 'เลยเวลาปิดรับแล้ว ถ้าจะเปิดต่อ แก้เวลาปิดรับแล้วกดปุ่มด้านล่าง' : 'กดปุ่มนี้เมื่อพร้อมให้พนักงานเริ่มสั่ง'}</div>
+    <button class="btn pri big openbtn" onclick="setDayStatus('open')">🔔 ${day.status === 'draft' ? 'เปิดรับออเดอร์' : 'เปิดรับออเดอร์อีกครั้ง'}</button></div>`;
+}
+function dayArgs(extra) { const a = S.ad; return Object.assign({ date: a.date, shopIds: a.shopIds, cutoff: a.cutoff, note: a.note }, extra || {}); }
 function saveDay() {
-  const a = S.ad;
-  if (a.status === 'open' && !a.shopIds.length) return toast('เลือกอย่างน้อย 1 ร้านก่อนเปิดรับนะ', true);
-  call('saveDay', { date: a.date, shopIds: a.shopIds, cutoff: a.cutoff, status: a.status, note: a.note })
-    .then(d => { applySync(d); S.ad = null; S.hist = null; toast('บันทึกแล้ว ✓'); render(); }).catch(fail);
+  call('saveDay', dayArgs()).then(d => { applySync(d); S.ad = null; S.hist = null; toast('บันทึกแล้ว ✓ กด "เปิดรับออเดอร์" เมื่อพร้อม'); render(); }).catch(fail);
+}
+async function setDayStatus(st) {
+  if (st === 'open' && !S.ad.shopIds.length) return toast('เลือกอย่างน้อย 1 ร้านก่อนเปิดรับนะ', true);
+  if (st === 'closed' && !(await confirmBox('ปิดรับออเดอร์ตอนนี้เลยใช่มั้ย?\nพนักงานจะสั่ง/แก้ออเดอร์ไม่ได้แล้ว', 'ปิดรับออเดอร์'))) return;
+  call('saveDay', dayArgs({ status: st })).then(d => {
+    applySync(d); S.ad = null; S.hist = null;
+    toast(st === 'open' ? (d.day.isOpen ? '🔔 เปิดรับออเดอร์แล้ว พนักงานสั่งได้เลย' : 'เปิดแล้ว แต่เลยเวลาปิดรับ — แก้เวลาปิดรับก่อนนะ') : '🔒 ปิดรับออเดอร์แล้ว');
+    render();
+  }).catch(fail);
 }
 function adminLogin() {
   const username = $('#lgUser').value.trim(), password = $('#lgPass').value;
@@ -888,7 +971,7 @@ function shopsPanel() {
 function openShop(id) {
   const s = id ? shopById(id) : null;
   S.se = s ? { shopId: s.shopId, name: s.name, phone: s.phone || '', note: s.note || '', active: s.active } : { shopId: '', name: '', phone: '', note: '', active: true };
-  S.meId = ''; S.seBulk = !id;
+  S.meId = ''; S.noteMenu = ''; S.seBulk = !id;
   renderShop();
 }
 function renderShop() {
@@ -896,16 +979,22 @@ function renderShop() {
   const cats = {};
   menus.forEach(m => (cats[m.category || ''] = cats[m.category || ''] || []).push(m));
   const keys = Object.keys(cats).sort((a, b) => (a === '') - (b === ''));
-  const mrow = m => S.meId === m.menuId ? menuEditHtml(m) : `<div class="mrow${m.active ? '' : ' off'}"><div class="nm"><b>${esc(m.name)}</b>${m.createdBy && m.createdBy !== 'ผู้ดูแล' ? ` <span class="tag sky">เพิ่มโดย ${esc(m.createdBy)}</span>` : ''}${m.active ? '' : ' <span class="tag gray">หมด</span>'}</div>
+  const mrow = m => S.meId === m.menuId ? menuEditHtml(m) : `<div class="mrow${m.active ? '' : ' off'}"><div class="nm"><b>${esc(m.name)}</b>${m.createdBy && m.createdBy !== 'ผู้ดูแล' ? ` <span class="tag sky">เพิ่มโดย ${esc(m.createdBy)}</span>` : ''}${m.active ? '' : ' <span class="tag gray">หมด</span>'}
+        ${m.noteOptions.length && S.noteMenu !== m.menuId ? `<div class="tiny muted">📝 ${m.noteOptions.map(esc).join(' · ')}</div>` : ''}</div>
       <span class="pr">${m.price != null ? baht(m.price) : '<span class="muted tiny">-</span>'}</span>
+      <button class="ibtn nb${S.noteMenu === m.menuId ? ' on' : ''}" title="ตัวเลือกหมายเหตุของเมนูนี้" onclick="S.noteMenu=S.noteMenu===${jsq(m.menuId)}?'':${jsq(m.menuId)};renderShop()">📝${m.noteOptions.length ? `<i>${m.noteOptions.length}</i>` : ''}</button>
       <button class="ibtn" title="${m.active ? 'ตั้งเป็นหมด' : 'มีขาย'}" onclick="toggleMenu(${jsq(m.menuId)})">${m.active ? '🟢' : '⚪'}</button>
-      <button class="ibtn" title="แก้ไข" onclick="S.meId=${jsq(m.menuId)};renderShop()">✏️</button></div>`;
+      <button class="ibtn" title="แก้ไข" onclick="S.meId=${jsq(m.menuId)};renderShop()">✏️</button></div>
+      ${S.noteMenu === m.menuId ? `<div class="noteed menu"><div class="tiny muted" style="margin-bottom:6px">ตัวเลือกหมายเหตุเฉพาะ "${esc(m.name)}" — พนักงานกดเลือกได้อย่างเดียว</div>${noteEditorHtml('menu', m.menuId, m.noteOptions)}</div>` : ''}`;
   openModal(`<div class="sheet"><div class="sh-h"><h3>${e.shopId ? '🏠 ' + esc(e.name) : '＋ เพิ่มร้านใหม่'}</h3><button class="btn ghost sm" onclick="closeModal()">✕</button></div>
     <div class="card" style="margin-top:6px"><label class="lbl" style="margin-top:0">ชื่อร้าน</label><input id="seName" class="inp" maxlength="80" value="${esc(e.name)}" placeholder="เช่น ร้านป้าแดง ตามสั่ง">
       <div class="row" style="margin-top:0"><div class="grow"><label class="lbl">เบอร์โทร <span class="opt">(ไม่บังคับ)</span></label><input id="sePhone" class="inp" maxlength="40" value="${esc(e.phone)}" inputmode="tel" placeholder="08x-xxx-xxxx"></div></div>
       <label class="lbl">หมายเหตุร้าน <span class="opt">(เห็นตอนสั่ง เช่น ขั้นต่ำ / ค่าส่ง)</span></label><input id="seNote" class="inp" maxlength="200" value="${esc(e.note)}">
       ${e.shopId ? `<label class="row small" style="margin-top:12px;cursor:pointer"><input type="checkbox" id="seActive"${e.active ? ' checked' : ''} style="width:20px;height:20px;accent-color:var(--pink2)"> แสดงร้านนี้ในรายการเลือกร้าน</label>` : ''}
       <div class="row" style="margin-top:14px"><button class="btn pri grow" onclick="saveShopInfo()">บันทึกข้อมูลร้าน</button>${e.shopId ? '<button class="btn danger" onclick="removeShop()">ลบร้าน</button>' : ''}</div></div>
+    ${e.shopId ? `<div class="card"><h2>📝 ตัวเลือกหมายเหตุ <span class="sub">ใช้ได้ทุกเมนูในร้านนี้</span></h2>
+      <div class="small muted" style="margin:-4px 0 10px">เช่น หวานน้อย, ไข่มุก · ถ้าเป็นของเมนูเดียว กด 📝 ที่เมนูนั้นแทน · พนักงานกดเลือกได้อย่างเดียว พิมพ์เองไม่ได้</div>
+      ${noteEditorHtml('shop', e.shopId, (shopById(e.shopId) || {}).noteOptions || [])}</div>` : ''}
     ${e.shopId ? `<div class="card"><h2>📋 เมนู <span class="sub">${menus.length} รายการ</span></h2>
       ${menus.length ? keys.map(k => (k ? `<div class="cathead">${esc(k)}</div>` : keys.length > 1 ? '<div class="cathead">ไม่มีหมวด</div>' : '') + cats[k].map(mrow).join('')).join('') : '<div class="small muted">ยังไม่มีเมนู เพิ่มด้านล่างได้เลย</div>'}
       ${S.meId === 'new' ? menuEditHtml({ menuId: '', name: '', price: null, category: '', active: true }) : `<div class="row" style="margin-top:12px"><button class="btn sm" onclick="S.meId='new';renderShop()">＋ เพิ่มทีละเมนู</button><button class="btn sm" onclick="S.seBulk=!S.seBulk;renderShop()">📝 วางหลายเมนูพร้อมกัน</button></div>`}
@@ -921,6 +1010,30 @@ function menuEditHtml(m) {
     <input id="mePrice" class="inp" type="number" inputmode="decimal" min="0" placeholder="ราคา" value="${m.price != null ? m.price : ''}">
     <datalist id="catList">${[...new Set(menusOf(S.se.shopId).map(x => x.category).filter(Boolean))].map(c => `<option value="${esc(c)}">`).join('')}</datalist>
     <div class="full row"><button class="btn pri sm" onclick="saveMenuEdit(${jsq(m.menuId)},${m.active ? 'true' : 'false'})">บันทึก</button><button class="btn sm" onclick="S.meId='';renderShop()">ยกเลิก</button><span class="grow"></span>${m.menuId ? `<button class="btn sm danger" onclick="removeMenu(${jsq(m.menuId)})">ลบเมนู</button>` : ''}</div></div>`;
+}
+function noteEditorHtml(kind, id, opts) {
+  return `<div class="chips">${opts.length ? opts.map(o => `<span class="chip sm on optchip">${esc(o)}<button class="xx" title="ลบตัวเลือกนี้" onclick="removeNoteOpt('${kind}',${jsq(id)},${jsq(o)})">✕</button></span>`).join('') : '<span class="small muted">ยังไม่มีตัวเลือก</span>'}</div>
+    <div class="row" style="margin-top:8px"><input id="ne-${kind}" class="inp grow" maxlength="40" onkeydown="if(event.key==='Enter')addNoteOpt('${kind}',${jsq(id)})"><button class="btn sm pri" onclick="addNoteOpt('${kind}',${jsq(id)})">＋ เพิ่ม</button></div>
+    <div class="hint">เพิ่มทีละหลายตัวได้ คั่นด้วย , เช่น ไข่มุก, เจลลี่, หวานน้อย</div>`;
+}
+function saveNoteOpts(kind, id, list) {
+  if (kind === 'shop') {
+    const s = shopById(id);
+    return call('saveShop', { shop: { shopId: id, name: s.name, phone: s.phone, note: s.note, active: s.active, noteOptions: list } });
+  }
+  return call('saveMenu', { menu: Object.assign({}, menuById(id), { noteOptions: list }) });
+}
+function addNoteOpt(kind, id) {
+  const inp = $('#ne-' + kind), cur = kind === 'shop' ? shopById(id).noteOptions : menuById(id).noteOptions;
+  const add = inp.value.split(/[,\n|]+/).map(x => x.trim()).filter(Boolean);
+  if (!add.length) { inp.focus(); return; }
+  const list = cur.slice(); add.forEach(x => { if (!list.includes(x)) list.push(x); });
+  saveNoteOpts(kind, id, list).then(d => { shopResult(d); renderShop(); toast('เพิ่มตัวเลือกแล้ว ✓'); setTimeout(() => { const i = $('#ne-' + kind); i && i.focus(); }, 30); }).catch(fail);
+}
+async function removeNoteOpt(kind, id, o) {
+  if (!(await confirmBox(`ลบตัวเลือกหมายเหตุ "${o}"?`, 'ลบ'))) return renderShop();
+  const cur = kind === 'shop' ? shopById(id).noteOptions : menuById(id).noteOptions;
+  saveNoteOpts(kind, id, cur.filter(x => x !== o)).then(d => { shopResult(d); renderShop(); toast('ลบแล้ว'); }).catch(e => { fail(e); renderShop(); });
 }
 function shopResult(d) { applySync(d); if (S.tab === 'admin' || S.tab === 'order') render(); }
 function saveShopInfo() {

@@ -162,6 +162,26 @@ select.inp{appearance:none;-webkit-appearance:none;padding-right:40px;background
 .live-dot.corner{top:7px;right:12px;width:14px;height:14px}
 .tabs button{position:relative}
 .tabs button.live::after{content:"";position:absolute;top:4px;right:calc(50% - 22px);width:10px;height:10px;border-radius:50%;background:#34C759;border:2px solid #fff;animation:blink 1.4s infinite}
+/* รอบบิล */
+.rounds{margin-top:12px;display:flex;flex-direction:column;gap:6px}
+.roundrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#fff;border:2px solid var(--line);border-radius:14px;padding:7px 12px;font-size:14.5px}
+.roundrow b{flex:1 1 150px;min-width:0}
+.rs{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;border-radius:999px;padding:1px 10px}
+.rs.open{background:#E3F6E7;color:#2F8A4A} .rs.draft{background:var(--yellow);color:#8C6A0E} .rs.closed{background:#F3ECE6;color:var(--ink2)}
+.ldot{width:9px;height:9px;border-radius:50%;background:#34C759;display:inline-block;animation:blink 1.4s infinite}
+.shophead .rs{margin:4px 0 2px}
+.closedshop{display:flex;align-items:center;gap:10px;flex-wrap:wrap;opacity:.8}
+.closedshop b{flex:1}
+.roundsbox{margin-top:16px;border:2px dashed var(--line);border-radius:18px;padding:12px;background:#FFFBF4}
+.round{background:#fff;border:2px solid var(--line);border-radius:16px;padding:10px 12px;margin-top:8px}
+.round.on{background:#F1FAF3;border-color:#BFE3C8}
+.round .rh{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.round .rh b{flex:1 1 100%;min-width:0}
+.round .rb{display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap}
+.round .rt{width:140px;padding:7px 10px}
+.round .openbtn{position:relative}
+.round .openbtn.closeit{background:#fff;color:var(--red);border-color:#F3CFC9;box-shadow:0 3px 0 #F3CFC9}
+.round .live-dot.corner{top:-5px;right:-5px;width:13px;height:13px}
 /* เปิด/ปิดรับออเดอร์ */
 .openbox{margin-top:16px;border:2px dashed var(--line);border-radius:18px;padding:12px 14px;background:#FFFBF4}
 .openbox.on{background:#EEF9F0;border-color:#BFE3C8;border-style:solid}
@@ -369,6 +389,8 @@ function thDate(iso, o) { return toD(iso).toLocaleDateString('th-TH-u-ca-gregory
 function addDays(iso, n) { const d = toD(iso); d.setDate(d.getDate() + n); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
 function bkkHM() { return new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Bangkok', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date()); }
 function minsLeft(cut) { if (!cut) return null; const [h, m] = bkkHM().split(':').map(Number), [ch, cm] = cut.split(':').map(Number); return ch * 60 + cm - (h * 60 + m); }
+function confOf(day, id) { return (day.shops || []).find(x => x.shopId === id) || { shopId: id, cutoff: day.cutoff, status: day.status, isOpen: day.isOpen }; }
+function leftText(cut) { const m = minsLeft(cut); return m != null && m > 0 ? `อีก ${m >= 60 ? Math.floor(m / 60) + ' ชม. ' : ''}${m % 60} นาที` : ''; }
 function shopById(id) { return S.shops.find(s => s.shopId === id); }
 function menusOf(id) { return S.menus.filter(m => m.shopId === id); }
 function menuById(id) { return S.menus.find(m => m.menuId === id); }
@@ -529,9 +551,12 @@ function switchMode() {
 function vOrder() {
   const D = S.cache[S.today];
   if (!D) { load(S.today).then(render, fail); return '<div class="spin"></div>'; }
-  const day = D.day, canOrder = day.isOpen || (isAdmin() && day.shopIds.length);
-  const shops = day.shopIds.map(shopById).filter(Boolean);
-  const left = `${statusCard(day)}${canOrder ? shops.map((s, i) => formCard(s, i, shops.length)).join('') : ''}`;
+  const day = D.day, admin = isAdmin();
+  // พนักงาน: สั่งได้เฉพาะร้านที่เปิดรับอยู่ · ร้านที่ปิดรับแล้วแสดงเป็นการ์ดเล็ก · ร้านที่ยังไม่เปิดไม่แสดง
+  const all = day.shopIds.map(shopById).filter(Boolean);
+  const forms = all.filter(s => admin || confOf(day, s.shopId).isOpen);
+  const closed = admin ? [] : all.filter(s => { const c = confOf(day, s.shopId); return !c.isOpen && c.status !== 'draft'; });
+  const left = `${statusCard(day)}${forms.map((s, i) => formCard(s, i, forms.length, confOf(day, s.shopId))).join('')}${closed.map(s => closedCard(s, confOf(day, s.shopId))).join('')}`;
   const right = `${greet()}${mineCard(D)}`;
   return `<div class="cols"><div>${left}</div><div class="stickyside">${right}</div></div>`;
 }
@@ -546,26 +571,33 @@ function greet() {
 }
 
 function statusCard(day) {
-  let cls, ic, title, sub = '', showShops = true;
-  if (day.status === 'none' || !day.shopIds.length) {
-    cls = 'none'; ic = '⏳'; title = 'ยังไม่ได้เลือกร้านวันนี้'; sub = 'รอผู้ดูแลเลือกร้านแป๊บนึงน้า'; showShops = false;
-  } else if (day.status === 'draft') {
+  const admin = isAdmin();
+  const list = day.shopIds.map(shopById).filter(Boolean);
+  const shown = list.filter(s => admin || confOf(day, s.shopId).status !== 'draft');
+  const nOpen = list.filter(s => confOf(day, s.shopId).isOpen).length;
+  let cls, ic, title, sub = '';
+  if (day.status === 'none' || !list.length) {
+    cls = 'none'; ic = '⏳'; title = 'ยังไม่ได้เลือกร้านวันนี้'; sub = 'รอผู้ดูแลเลือกร้านแป๊บนึงน้า';
+  } else if (nOpen) {
+    cls = 'open'; ic = '🍽️'; title = `เปิดรับออเดอร์อยู่ ${nOpen} ร้าน`; sub = nOpen > 1 ? 'สั่งได้ทุกร้านที่เปิดอยู่ · เลื่อนลงดูนะ 👇' : 'เลือกเมนูด้านล่างได้เลย 👇';
+  } else if (!shown.length || day.status === 'draft') {
     cls = 'none'; ic = '⏳'; title = 'ยังไม่เปิดรับออเดอร์';
-    sub = isAdmin() ? 'บันทึกร้านแล้ว · ไปแท็บ "ตั้งค่า" แล้วกด "เปิดรับออเดอร์" พนักงานถึงจะสั่งได้' : 'ผู้ดูแลกำลังเตรียมร้าน รอแป๊บน้า';
-    showShops = isAdmin();
-  } else if (day.isOpen) {
-    cls = 'open'; ic = '🍽️'; title = 'เปิดรับออเดอร์อยู่';
-    const m = minsLeft(day.cutoff);
-    sub = day.cutoff ? `สั่งได้ถึง ${day.cutoff} น.` + (m != null && m > 0 ? ` · อีก ${m >= 60 ? Math.floor(m / 60) + ' ชม. ' : ''}${m % 60} นาที` : '') : 'สั่งได้จนกว่าผู้ดูแลจะปิดรับ';
+    sub = admin ? 'ไปแท็บ "ตั้งค่า" แล้วกด "เปิดรับออเดอร์" ของแต่ละร้าน' : 'ผู้ดูแลกำลังเตรียมร้าน รอแป๊บน้า';
   } else {
     cls = 'closed'; ic = '🔒'; title = 'ปิดรับออเดอร์แล้ว';
-    sub = isAdmin() ? 'คุณเป็นผู้ดูแล ยังเพิ่ม/แก้ออเดอร์ได้' : 'ถ้าลืมสั่ง ติดต่อผู้ดูแลได้นะ';
+    sub = admin ? 'คุณเป็นผู้ดูแล ยังเพิ่ม/แก้ออเดอร์ได้' : 'ถ้าลืมสั่ง ติดต่อผู้ดูแลได้นะ';
   }
-  const list = day.shopIds.map(shopById).filter(Boolean);
-  const shops = showShops ? list.map(s => esc(s.name)).join(' · ') : '';
-  const many = day.isOpen && list.length > 1 ? `<div class="manyshops">วันนี้มี <b>${list.length} ร้าน</b> สั่งได้ทุกร้าน · เลื่อนลงดูนะ 👇</div>` : '';
-  return `<div class="card"><div class="status ${cls}"><div class="dot">${ic}${cls === 'open' ? '<span class="live-dot"></span>' : ''}</div><div class="grow"><b>${title}</b><div class="small muted">${sub}</div>${shops ? `<div class="small" style="margin-top:2px">🏠 ${shops}</div>` : ''}</div></div>
-    ${many}${day.note ? `<div class="announce">📢 ${esc(day.note)}</div>` : ''}</div>`;
+  const rows = shown.map(s => {
+    const c = confOf(day, s.shopId);
+    const st = c.isOpen ? `<span class="rs open"><i class="ldot"></i>เปิดรับ${c.cutoff ? ` ถึง ${c.cutoff} น.` : ''}</span>${c.cutoff ? `<span class="tiny muted">${leftText(c.cutoff)}</span>` : ''}`
+      : c.status === 'draft' ? '<span class="rs draft">⏳ ยังไม่เปิดรับ</span>' : '<span class="rs closed">🔒 ปิดรับแล้ว</span>';
+    return `<div class="roundrow"><b class="grow">${esc(s.name)}</b>${st}</div>`;
+  }).join('');
+  return `<div class="card"><div class="status ${cls}"><div class="dot">${ic}${cls === 'open' ? '<span class="live-dot"></span>' : ''}</div><div class="grow"><b>${title}</b><div class="small muted">${sub}</div></div></div>
+    ${rows ? `<div class="rounds">${rows}</div>` : ''}${day.note ? `<div class="announce">📢 ${esc(day.note)}</div>` : ''}</div>`;
+}
+function closedCard(shop, c) {
+  return `<div class="card closedshop"><b>🏠 ${esc(shop.name)}</b><span class="rs closed">🔒 ปิดรับแล้ว${c.cutoff ? ` (${c.cutoff} น.)` : ''}</span></div>`;
 }
 
 /* ---------- ฟอร์มสั่งอาหาร: 1 การ์ดต่อร้าน ---------- */
@@ -580,7 +612,7 @@ function formUnit(f) {
   const sel = menuById(f.menuId);
   return f.menuId === '__other' ? (f.otherPrice !== '' ? Number(f.otherPrice) : null) : sel ? sel.price : null;
 }
-function formCard(shop, i, n) {
+function formCard(shop, i, n, c) {
   const sid = shop.shopId, f = fm(sid), admin = isAdmin();
   const menus = menusOf(sid).filter(m => m.active || admin || m.menuId === f.menuId);
   const cats = {};
@@ -595,9 +627,11 @@ function formCard(shop, i, n) {
       ${open ? `<div class="ddlist">${nopts.map(x => `<button class="ddopt${f.notes.includes(x) ? ' on' : ''}" onclick="toggleNoteOpt(${jsq(sid)},${jsq(x)})"><span class="ck">${f.notes.includes(x) ? '✓' : ''}</span>${esc(x)}</button>`).join('')}
         <div class="row" style="justify-content:flex-end;padding:6px 4px 2px"><button class="btn sm pri" onclick="toggleNoteDd(${jsq(sid)})">เสร็จ</button></div></div>` : ''}`
     : `<div class="hint">${f.menuId ? 'เมนูนี้ไม่มีตัวเลือกหมายเหตุ' : 'เลือกเมนูก่อน แล้วเลือกหมายเหตุได้ (ถ้ามี)'}</div>`;
+  const stTxt = c.isOpen ? `<span class="rs open"><i class="ldot"></i>เปิดรับ${c.cutoff ? ` ถึง ${c.cutoff} น. · ${leftText(c.cutoff) || 'ใกล้ปิดแล้ว'}` : ''}</span>`
+    : c.status === 'draft' ? '<span class="rs draft">⏳ ยังไม่เปิดรับ (เห็นเฉพาะผู้ดูแล)</span>' : '<span class="rs closed">🔒 ปิดรับแล้ว (ผู้ดูแลยังสั่งแทนได้)</span>';
   const head = n > 1
-    ? `<div class="shophead c${i % 3}"><span class="num">ร้านที่ ${i + 1}/${n}</span><b>🏠 ${esc(shop.name)}</b>${shop.note ? `<div class="tiny">${esc(shop.note)}</div>` : ''}</div>`
-    : `<h2>🍱 สั่งอาหาร</h2><div class="oneshop"><span style="font-size:22px">🏠</span><div class="grow"><b>${esc(shop.name)}</b>${shop.note ? `<div class="tiny muted">${esc(shop.note)}</div>` : ''}</div></div>`;
+    ? `<div class="shophead c${i % 3}"><span class="num">ร้านที่ ${i + 1}/${n}</span><b>🏠 ${esc(shop.name)}</b>${stTxt}${shop.note ? `<div class="tiny">${esc(shop.note)}</div>` : ''}</div>`
+    : `<h2>🍱 สั่งอาหาร</h2><div class="oneshop"><span style="font-size:22px">🏠</span><div class="grow"><b>${esc(shop.name)}</b><div>${stTxt}</div>${shop.note ? `<div class="tiny muted">${esc(shop.note)}</div>` : ''}</div></div>`;
 
   return `<div class="card orderform${n > 1 ? ' multi c' + (i % 3) : ''}" id="of-${i}">${head}${editing}
     <label class="lbl" for="m-${i}">เลือกเมนู</label>
@@ -664,13 +698,13 @@ function submitOrder(sid, i) {
 function cancelEdit() { if (S.editShop) S.forms[S.editShop] = blankForm(); S.editId = ''; S.editShop = ''; render(); }
 
 function mineCard(D) {
-  const mine = D.orders.filter(o => o.mine), can = D.day.isOpen || isAdmin();
+  const mine = D.orders.filter(o => o.mine), canFor = o => isAdmin() || confOf(D.day, o.shopId).isOpen;
   const people = new Set(D.orders.map(o => o.name)).size;
   const list = mine.length ? `<div class="olist">${mine.map(o => `<div class="oitem"><span class="em">🍛</span><div class="grow">
       <div class="t">${esc(o.menuName)} <span class="tag pink">×${o.qty}</span></div>
       <div class="tiny muted">${esc(o.shopName)} · ${esc(o.name)}${o.price != null ? ' · ' + baht(o.price * o.qty) : ''}</div>
       ${o.note ? `<div class="nt">📝 ${esc(o.note)}</div>` : ''}</div>
-      ${can ? `<div class="act"><button class="btn sm" onclick="editOrder(${jsq(o.orderId)})">แก้ไข</button><button class="btn sm danger" onclick="cancelOrder(${jsq(o.orderId)})">ยกเลิก</button></div>` : ''}</div>`).join('')}</div>`
+      ${canFor(o) ? `<div class="act"><button class="btn sm" onclick="editOrder(${jsq(o.orderId)})">แก้ไข</button><button class="btn sm danger" onclick="cancelOrder(${jsq(o.orderId)})">ยกเลิก</button></div>` : ''}</div>`).join('')}</div>`
     : `<div class="empty">${ART.bowl}<div class="small">ยังไม่ได้สั่งเลย เลือกเมนูได้เลยน้า~</div></div>`;
   return `<div class="card"><h2>🧾 ออเดอร์ของฉันวันนี้</h2>${list}
     <div class="hr"></div><div class="row small"><span class="grow muted">ทุกคนสั่งแล้ว <b style="color:var(--ink)">${people}</b> คน · ${D.orders.reduce((a, o) => a + o.qty, 0)} รายการ</span><button class="btn sm" onclick="go('summary')">ดูสรุป →</button></div></div>`;
@@ -688,7 +722,8 @@ function editOrder(id) {
     notes: parts.filter(p => opts.includes(p)), extra: admin ? parts.filter(p => !opts.includes(p)).join(', ') : '', name: o.name,
   };
   render();
-  const idx = S.cache[S.today].day.shopIds.filter(x => shopById(x)).indexOf(o.shopId);
+  const day = S.cache[S.today].day;
+  const idx = day.shopIds.filter(x => shopById(x) && (admin || confOf(day, x).isOpen)).indexOf(o.shopId);
   setTimeout(() => { const el = $('#of-' + idx); el && el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 30);
 }
 async function cancelOrder(id, date) {
@@ -818,7 +853,11 @@ function vAdmin() {
   if (!isAdmin()) return vLogin();
   const date = S.adminDate || S.today, D = S.cache[date];
   if (!D) { load(date).then(render, fail); return '<div class="spin"></div>'; }
-  if (!S.ad || S.ad.date !== date) S.ad = { date, shopIds: D.day.shopIds.slice(), cutoff: D.day.cutoff || '11:00', status: D.day.status, note: D.day.note || '', fresh: D.day.status === 'none' };
+  if (!S.ad || S.ad.date !== date) {
+    const cut = {};
+    D.day.shopIds.forEach(id => { cut[id] = confOf(D.day, id).cutoff || ''; });
+    S.ad = { date, shopIds: D.day.shopIds.slice(), cutoffs: cut, note: D.day.note || '', fresh: D.day.status === 'none', dirty: false };
+  }
   const me = S.me || {};
   return `<div class="cols"><div>${dayPanel(D)}</div><div>${shopsPanel()}
     <div class="card"><h2>👤 บัญชีของฉัน</h2>
@@ -831,53 +870,71 @@ function dayPanel(D) {
   const cnt = D.orders.reduce((x, o) => x + o.qty, 0);
   return `<div class="card"><h2>🗓️ ร้านประจำวัน</h2>
     <input type="date" class="inp" value="${a.date}" onchange="S.adminDate=this.value;S.ad=null;render()">
-    <div class="row small" style="margin-top:6px"><span class="grow">${thDate(a.date, { weekday: 'long', day: 'numeric', month: 'long' })}</span>${a.fresh ? '<span class="tag yel">ยังไม่ได้ตั้งค่า</span>' : D.day.isOpen ? '<span class="tag mint">เปิดรับอยู่</span>' : D.day.status === 'draft' ? '<span class="tag yel">รอเปิดรับ</span>' : '<span class="tag gray">ปิดรับ</span>'}${cnt ? ` <span class="tag pink">${cnt} รายการ</span>` : ''}</div>
+    <div class="row small" style="margin-top:6px"><span class="grow">${thDate(a.date, { weekday: 'long', day: 'numeric', month: 'long' })}</span>${a.fresh ? '<span class="tag yel">ยังไม่ได้ตั้งค่า</span>' : (() => { const n = D.day.shopIds.filter(id => confOf(D.day, id).isOpen).length; return n ? `<span class="tag mint">เปิดรับ ${n}/${D.day.shopIds.length} ร้าน</span>` : D.day.status === 'draft' ? '<span class="tag yel">รอเปิดรับ</span>' : '<span class="tag gray">ปิดรับ</span>'; })()}${cnt ? ` <span class="tag pink">${cnt} รายการ</span>` : ''}</div>
     <span class="lbl">เลือกร้านที่จะสั่งวันนี้ <span class="opt">(เลือกได้หลายร้าน)</span></span>
     ${S.shops.length > 6 ? `<input class="inp" placeholder="🔍 ค้นหาร้าน" value="${esc(S.adSearch)}" oninput="S.adSearch=this.value;renderKeep(this)" style="margin-bottom:8px">` : ''}
     ${list.length ? `<div class="chips">${list.map(s => `<button class="chip${a.shopIds.includes(s.shopId) ? ' on' : ''}" onclick="toggleDayShop(${jsq(s.shopId)})">${a.shopIds.includes(s.shopId) ? '✓ ' : ''}${esc(s.name)}</button>`).join('')}</div>`
       : `<div class="small muted">${S.shops.length ? 'ไม่พบร้าน' : 'ยังไม่มีร้าน — เพิ่มร้านในกล่อง "ร้านและเมนู" ก่อนนะ'}</div>`}
     <div class="row" style="margin-top:10px"><button class="btn sm" onclick="randomShop()">🎲 สุ่มร้านให้หน่อย</button>${S.lastShopIds.length ? `<button class="btn sm" onclick="useLast()">↺ ใช้ร้านเหมือนครั้งก่อน</button>` : ''}</div>
-    <span class="lbl">ปิดรับออเดอร์เวลา</span><input type="time" class="inp" style="width:150px" value="${esc(a.cutoff)}" onchange="S.ad.cutoff=this.value">
     <label class="lbl">ประกาศถึงทีม <span class="opt">(ไม่บังคับ)</span></label>
     <input class="inp" maxlength="200" placeholder="เช่น วันนี้ร้านส่งช้า สั่งก่อน 10 โมงนะ" value="${esc(a.note)}" oninput="S.ad.note=this.value">
     <div style="margin-top:14px"><button class="btn mint big" onclick="saveDay()">บันทึกร้านประจำวัน ✓</button></div>
-    <div class="hint">เว้นเวลาปิดรับว่าง = เปิดจนกว่าจะกด "ปิดรับออเดอร์"</div>
-    ${openPanel(D)}</div>`;
+    ${roundsPanel(D)}</div>`;
 }
 function renderKeep(inp) { const pos = inp.selectionStart; render(); const n = document.querySelector('#view input[oninput^="S.adSearch"]'); if (n) { n.focus(); n.setSelectionRange(pos, pos); } }
-function toggleDayShop(id) { const a = S.ad, i = a.shopIds.indexOf(id); if (i >= 0) a.shopIds.splice(i, 1); else a.shopIds.push(id); render(); }
+function toggleDayShop(id) {
+  const a = S.ad, i = a.shopIds.indexOf(id);
+  if (i >= 0) a.shopIds.splice(i, 1);
+  else { a.shopIds.push(id); if (!(id in a.cutoffs)) a.cutoffs[id] = Object.values(a.cutoffs).filter(Boolean).pop() || '11:00'; }
+  a.dirty = true; render();
+}
 function randomShop() {
   const pool = S.shops.filter(s => s.active && menusOf(s.shopId).length);
   if (!pool.length) return toast('ยังไม่มีร้านที่มีเมนูให้สุ่ม', true);
   const others = pool.filter(s => !S.ad.shopIds.includes(s.shopId));
   const pick = (others.length ? others : pool)[Math.floor(Math.random() * (others.length || pool.length))];
-  S.ad.shopIds = [pick.shopId]; render(); toast('🎲 วันนี้กิน… ' + pick.name + '!');
+  S.ad.shopIds = [pick.shopId]; if (!S.ad.cutoffs[pick.shopId]) S.ad.cutoffs[pick.shopId] = '11:00'; S.ad.dirty = true; render(); toast('🎲 วันนี้กิน… ' + pick.name + '!');
 }
-function useLast() { S.ad.shopIds = S.lastShopIds.filter(id => shopById(id)); render(); }
-// ขั้นที่ 2: เปิด/ปิดรับออเดอร์ (พนักงานเห็นหน้าสั่งเมื่อเปิดรับแล้วเท่านั้น)
-function openPanel(D) {
-  const day = D.day, a = S.ad;
-  if (a.fresh) return `<div class="openbox off"><b>ขั้นต่อไป: เปิดรับออเดอร์</b><div class="small muted">บันทึกร้านประจำวันก่อน แล้วปุ่มเปิดรับออเดอร์จะกดได้</div>
-    <button class="btn big openbtn" disabled>🔔 เปิดรับออเดอร์</button></div>`;
-  if (day.isOpen) return `<div class="openbox on"><b>🟢 กำลังเปิดรับออเดอร์</b><div class="small muted">พนักงานสั่งได้แล้ว${day.cutoff ? ` · ปิดรับอัตโนมัติ ${day.cutoff} น.` : ''}</div>
-    <button class="btn big openbtn closeit" onclick="setDayStatus('closed')"><span class="live-dot corner"></span>🔒 ปิดรับออเดอร์</button></div>`;
-  const late = day.status === 'open' && !day.isOpen;
-  return `<div class="openbox"><b>${day.status === 'closed' || late ? '🔒 ปิดรับออเดอร์แล้ว' : '📝 บันทึกแล้ว · พนักงานยังไม่เห็นหน้าสั่ง'}</b>
-    <div class="small muted">${late ? 'เลยเวลาปิดรับแล้ว ถ้าจะเปิดต่อ แก้เวลาปิดรับแล้วกดปุ่มด้านล่าง' : 'กดปุ่มนี้เมื่อพร้อมให้พนักงานเริ่มสั่ง'}</div>
-    <button class="btn pri big openbtn" onclick="setDayStatus('open')">🔔 ${day.status === 'draft' ? 'เปิดรับออเดอร์' : 'เปิดรับออเดอร์อีกครั้ง'}</button></div>`;
+function useLast() { S.ad.shopIds = S.lastShopIds.filter(id => shopById(id)); S.ad.shopIds.forEach(id => { if (!S.ad.cutoffs[id]) S.ad.cutoffs[id] = '11:00'; }); S.ad.dirty = true; render(); }
+// รอบบิล: แต่ละร้านมีเวลาปิดรับ + ปุ่มเปิด/ปิดรับของตัวเอง (พนักงานสั่งได้เฉพาะร้านที่เปิดรับอยู่)
+function roundsPanel(D) {
+  const a = S.ad, day = D.day;
+  if (!a.shopIds.length) return '';
+  const rows = a.shopIds.map(id => {
+    const s = shopById(id); if (!s) return '';
+    const saved = day.shopIds.includes(id), c = confOf(day, id);
+    const late = saved && c.status === 'open' && !c.isOpen;
+    let st, btn;
+    if (!saved) { st = '<span class="rs draft">ยังไม่ได้บันทึก</span>'; btn = '<button class="btn sm openbtn" disabled>🔔 เปิดรับ</button>'; }
+    else if (c.isOpen) { st = `<span class="rs open"><i class="ldot"></i>กำลังเปิดรับ${c.cutoff ? ` · ${leftText(c.cutoff) || 'ใกล้ปิด'}` : ''}</span>`; btn = `<button class="btn sm openbtn closeit" onclick="setShopStatus(${jsq(id)},'closed')"><span class="live-dot corner"></span>🔒 ปิดรับ</button>`; }
+    else if (c.status === 'draft') { st = '<span class="rs draft">⏳ รอเปิดรับ · พนักงานยังไม่เห็น</span>'; btn = `<button class="btn sm pri openbtn" onclick="setShopStatus(${jsq(id)},'open')">🔔 เปิดรับ</button>`; }
+    else { st = `<span class="rs closed">🔒 ${late ? 'เลยเวลาปิดรับแล้ว' : 'ปิดรับแล้ว'}</span>`; btn = `<button class="btn sm pri openbtn" onclick="setShopStatus(${jsq(id)},'open')">🔔 เปิดรับอีกครั้ง</button>`; }
+    return `<div class="round${c.isOpen && saved ? ' on' : ''}"><div class="rh"><b>🏠 ${esc(s.name)}</b>${st}</div>
+      <div class="rb"><label class="tiny muted">ปิดรับเวลา</label><input type="time" class="inp rt" value="${esc(a.cutoffs[id] || '')}" onchange="S.ad.cutoffs[${jsq(id)}]=this.value;S.ad.dirty=true"><span class="grow"></span>${btn}</div></div>`;
+  }).join('');
+  const canOpenAll = day.shopIds.filter(id => !confOf(day, id).isOpen).length > 1;
+  return `<div class="roundsbox"><div class="row"><b class="grow">🧾 รอบบิลแต่ละร้าน</b>${canOpenAll ? '<button class="btn sm" onclick="openAllShops()">🔔 เปิดรับทุกร้าน</button>' : ''}</div>
+    <div class="tiny muted" style="margin:2px 0 8px">แต่ละร้านเปิด/ปิดรับแยกกัน · เว้นเวลาว่าง = เปิดจนกว่าจะกดปิดรับ · กดเปิด/ปิดรับจะบันทึกเวลาที่แก้ไว้ให้ด้วย</div>${rows}</div>`;
 }
-function dayArgs(extra) { const a = S.ad; return Object.assign({ date: a.date, shopIds: a.shopIds, cutoff: a.cutoff, note: a.note }, extra || {}); }
+function dayArgs(extra) {
+  const a = S.ad;
+  return Object.assign({ date: a.date, shops: a.shopIds.map(id => ({ shopId: id, cutoff: a.cutoffs[id] || '' })), note: a.note }, extra || {});
+}
 function saveDay() {
-  call('saveDay', dayArgs()).then(d => { applySync(d); S.ad = null; S.hist = null; toast('บันทึกแล้ว ✓ กด "เปิดรับออเดอร์" เมื่อพร้อม'); render(); }).catch(fail);
+  call('saveDay', dayArgs()).then(d => { applySync(d); S.ad = null; S.hist = null; toast('บันทึกแล้ว ✓ กด "เปิดรับ" ของแต่ละร้านเมื่อพร้อม'); render(); }).catch(fail);
 }
-async function setDayStatus(st) {
-  if (st === 'open' && !S.ad.shopIds.length) return toast('เลือกอย่างน้อย 1 ร้านก่อนเปิดรับนะ', true);
-  if (st === 'closed' && !(await confirmBox('ปิดรับออเดอร์ตอนนี้เลยใช่มั้ย?\nพนักงานจะสั่ง/แก้ออเดอร์ไม่ได้แล้ว', 'ปิดรับออเดอร์'))) return;
-  call('saveDay', dayArgs({ status: st })).then(d => {
+async function setShopStatus(id, st) {
+  const s = shopById(id);
+  if (st === 'closed' && !(await confirmBox(`ปิดรับออเดอร์ร้าน "${s.name}" ตอนนี้เลยใช่มั้ย?\nพนักงานจะสั่ง/แก้ออเดอร์ร้านนี้ไม่ได้แล้ว`, 'ปิดรับ'))) return;
+  call('saveDay', dayArgs({ setStatus: { shopId: id, status: st } })).then(d => {
     applySync(d); S.ad = null; S.hist = null;
-    toast(st === 'open' ? (d.day.isOpen ? '🔔 เปิดรับออเดอร์แล้ว พนักงานสั่งได้เลย' : 'เปิดแล้ว แต่เลยเวลาปิดรับ — แก้เวลาปิดรับก่อนนะ') : '🔒 ปิดรับออเดอร์แล้ว');
+    const c = confOf(d.day, id);
+    toast(st === 'open' ? (c.isOpen ? `🔔 เปิดรับ "${s.name}" แล้ว` : 'เปิดแล้ว แต่เลยเวลาปิดรับ — แก้เวลาก่อนนะ') : `🔒 ปิดรับ "${s.name}" แล้ว`);
     render();
   }).catch(fail);
+}
+function openAllShops() {
+  call('saveDay', dayArgs({ status: 'open' })).then(d => { applySync(d); S.ad = null; S.hist = null; toast('🔔 เปิดรับทุกร้านแล้ว'); render(); }).catch(fail);
 }
 function adminLogin() {
   const username = $('#lgUser').value.trim(), password = $('#lgPass').value;

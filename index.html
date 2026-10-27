@@ -726,6 +726,29 @@ function editOrder(id) {
   const idx = day.shopIds.filter(x => shopById(x) && (admin || confOf(day, x).isOpen)).indexOf(o.shopId);
   setTimeout(() => { const el = $('#of-' + idx); el && el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 30);
 }
+// ยกเลิกออเดอร์ทั้งรอบบิลของร้าน (ผู้ดูแล)
+function cancelShopAll(date, shopId) {
+  const D = S.cache[date], s = shopById(shopId);
+  const list = ((D && D.orders) || []).filter(o => o.shopId === shopId);
+  const qty = list.reduce((x, o) => x + o.qty, 0), people = new Set(list.map(o => o.name)).size;
+  if (!list.length) return toast('ร้านนี้ไม่มีออเดอร์แล้ว');
+  const inDay = D && D.day.shopIds.includes(shopId);
+  openModal(`<div class="sheet small"><div class="empty" style="padding-top:2px">${ART.cat}<b>ยกเลิกออเดอร์ทั้งร้าน?</b>
+      <div class="small" style="margin-top:6px">🏠 ${esc(s ? s.name : list[0].shopName)}<br>${qty} รายการ · ${people} คน · ${thDate(date)}</div>
+      <div class="tiny muted" style="margin-top:6px">ข้อมูลยังเก็บในชีต (สถานะ "ยกเลิก") ไม่ได้ลบทิ้ง</div></div>
+    ${inDay ? `<label class="row small" style="cursor:pointer;margin:4px 0 12px;justify-content:center"><input type="checkbox" id="caClose" checked style="width:20px;height:20px;accent-color:var(--pink2)"> ปิดรับร้านนี้ด้วย (พนักงานจะสั่งร้านนี้ไม่ได้)</label>` : ''}
+    <div class="row"><button class="btn grow" onclick="closeModal()">ไม่ใช่</button><button class="btn pri grow" style="background:var(--red);border-color:var(--red);box-shadow:0 4px 0 #B94F4F" onclick="doCancelShopAll(${jsq(date)},${jsq(shopId)})">ยกเลิกทั้งหมด</button></div></div>`);
+}
+function doCancelShopAll(date, shopId) {
+  const close = !!($('#caClose') && $('#caClose').checked);
+  closeModal();
+  call('cancelShopOrders', { date, shopId, closeRound: close }).then(d => {
+    applySync(d); S.ad = null; S.hist = null;
+    if (S.editShop === shopId) cancelEdit();
+    toast(`ยกเลิกแล้ว ${d.cancelled} ออเดอร์${close ? ' · ปิดรับร้านนี้แล้ว' : ''}`);
+    render();
+  }).catch(fail);
+}
 async function cancelOrder(id, date) {
   if (!(await confirmBox('ยกเลิกออเดอร์นี้ใช่มั้ย?', 'ยกเลิกออเดอร์'))) return;
   call('cancelOrder', { orderId: id }).then(d => { applySync(d); if (S.editId === id) cancelEdit(); toast('ยกเลิกแล้ว'); render(); }).catch(fail);
@@ -783,6 +806,7 @@ function vSummary() {
   const shopCards = groups.map(s => {
     const shop = shopById(s.shopId);
     return `<div class="card shopsum"><h2>🏠 ${esc(shop ? shop.name : s.name)} <span class="sub">${s.qty} รายการ</span></h2>
+      ${admin ? `<div class="noprint" style="margin:-4px 0 8px"><button class="btn sm danger" onclick="cancelShopAll(${jsq(date)},${jsq(s.shopId)})">🗑 ยกเลิกออเดอร์ทั้งร้าน</button></div>` : ''}
       ${shop && shop.phone ? `<div class="tiny" style="margin:-6px 0 6px">📞 <a href="tel:${esc(shop.phone.replace(/[^\d+]/g, ''))}">${esc(shop.phone)}</a></div>` : ''}
       ${s.items.map(it => `<div class="mi"><div class="mh"><span class="nm">${esc(it.name)}</span><span class="pr">${it.price != null ? baht(it.total) : ''}</span><span class="q">×${it.qty}</span></div>
         ${noteGroups(it.people).map(g => `<div class="ngroup${g.note ? ' has-note' : ''}">${g.note ? `<span class="ngn">📝 ${esc(g.note)}</span>` : (it.people.some(o => o.note) ? '<span class="ngn plain">ธรรมดา</span>' : '')}${g.note || it.people.some(o => o.note) ? `<span class="ngq">×${g.qty}</span>` : ''}
@@ -909,7 +933,8 @@ function roundsPanel(D) {
     else if (c.isOpen) { st = `<span class="rs open"><i class="ldot"></i>กำลังเปิดรับ${c.cutoff ? ` · ${leftText(c.cutoff) || 'ใกล้ปิด'}` : ''}</span>`; btn = `<button class="btn sm openbtn closeit" onclick="setShopStatus(${jsq(id)},'closed')"><span class="live-dot corner"></span>🔒 ปิดรับ</button>`; }
     else if (c.status === 'draft') { st = '<span class="rs draft">⏳ รอเปิดรับ · พนักงานยังไม่เห็น</span>'; btn = `<button class="btn sm pri openbtn" onclick="setShopStatus(${jsq(id)},'open')">🔔 เปิดรับ</button>`; }
     else { st = `<span class="rs closed">🔒 ${late ? 'เลยเวลาปิดรับแล้ว' : 'ปิดรับแล้ว'}</span>`; btn = `<button class="btn sm pri openbtn" onclick="setShopStatus(${jsq(id)},'open')">🔔 เปิดรับอีกครั้ง</button>`; }
-    return `<div class="round${c.isOpen && saved ? ' on' : ''}"><div class="rh"><b>🏠 ${esc(s.name)}</b>${st}</div>
+    const cnt = D.orders.filter(o => o.shopId === id).reduce((x, o) => x + o.qty, 0);
+    return `<div class="round${c.isOpen && saved ? ' on' : ''}"><div class="rh"><b>🏠 ${esc(s.name)}</b>${st}${cnt ? `<span class="tag pink">${cnt} รายการ</span><button class="btn sm danger" style="padding:3px 10px" onclick="cancelShopAll(${jsq(a.date)},${jsq(id)})">🗑 ยกเลิกทั้งร้าน</button>` : ''}</div>
       <div class="rb"><label class="tiny muted">ปิดรับเวลา</label><input type="time" class="inp rt" value="${esc(a.cutoffs[id] || '')}" onchange="S.ad.cutoffs[${jsq(id)}]=this.value;S.ad.dirty=true"><span class="grow"></span>${btn}</div></div>`;
   }).join('');
   const canOpenAll = day.shopIds.filter(id => !confOf(day, id).isOpen).length > 1;
